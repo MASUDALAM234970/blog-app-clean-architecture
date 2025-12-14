@@ -1,3 +1,4 @@
+import 'package:blog_app/core/common/widgets/loader.dart';
 import 'package:blog_app/features/auth/presentation/pages/login_page.dart';
 import 'package:blog_app/features/auth/presentation/widgets/auth_field.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +34,31 @@ class _SignupPageState extends State<SignupPage> {
       appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
-        child: Form(
+        child: BlocConsumer<AuthBloc, AuthState>(
+  listener: (context, state) {
+    if (state is AuthFailure) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(state.message),
+        ),
+      );
+    } else if (state is AuthSuccess) {
+      // Navigate to home page or show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Signup Successful!'),
+        ),
+      );
+    }
+  },
+  builder: (context, state) {
+
+
+     if (state is AuthLoading) {
+      return  const Loader();
+         }
+
+    return Form(
          key: formKey,
 
           child: Column(
@@ -92,7 +117,9 @@ class _SignupPageState extends State<SignupPage> {
               ),
             ],
           ),
-        ),
+        );
+  },
+),
       ),
     );
   }
