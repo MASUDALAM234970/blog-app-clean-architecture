@@ -10,6 +10,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
   AuthRepositoryImpl({required this.remoteDataSource});
 
+
   @override
   Future<Either<Failure, String>> signUpWithEmailPassword({
     required String name,
