@@ -1,9 +1,11 @@
 import 'package:get_it/get_it.dart';
 import 'package:flutter/widgets.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'core/common/cubits/app_user_cubit.dart';
 import 'core/secrets/app_secrets.dart';
 import 'features/auth/data/datasources/auth_remote_data_source.dart';
 import 'features/auth/data/repositories/auth_repository.dart';
+import 'features/auth/domain/usecases/current_user.dart';
 import 'features/auth/domain/usecases/user_login.dart';
 import 'features/auth/domain/usecases/user_sign_up.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
@@ -45,11 +47,19 @@ Future<void> initDependencies() async {
     () => UserLogin(authRepository: serviceLocator<AuthRepository>()),
   );
 
+  serviceLocator.registerFactory<CurrentUser>(
+    () => CurrentUser(serviceLocator<AuthRepository>()),
+  );
+
+  serviceLocator.registerLazySingleton(() => AppUserCubit());
+
   // Bloc
   serviceLocator.registerFactory<AuthBloc>(
     () => AuthBloc(
       userSignUp: serviceLocator<UserSignUp>(),
       userLogin: serviceLocator<UserLogin>(),
+      currentUser: serviceLocator<CurrentUser>(),
+      appUserCubit: serviceLocator<AppUserCubit>(),
     ),
   );
 }
