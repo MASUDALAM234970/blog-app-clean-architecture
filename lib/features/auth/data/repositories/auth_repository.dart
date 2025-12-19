@@ -1,4 +1,4 @@
-import 'package:blog_app/features/auth/domain/entities/user.dart';
+import 'package:blog_app/core/common/entities/user.dart';
 import 'package:fpdart/fpdart.dart';
 
 
@@ -12,6 +12,27 @@ class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
 
   AuthRepositoryImpl({required this.remoteDataSource});
+
+
+  @override
+  Future<Either<Failure, User>> CurrentUser() async{
+    try {
+      final user = await remoteDataSource.getCurrentUserData();
+      if (user == null) {
+        return left(Failure('No user logged in'));
+      }
+      return Right(user);
+    } on sb.AuthException catch (e) {
+      return Left(Failure(e.message));
+    }
+    on ServerException catch (e) {
+      return Left(Failure(e.message));
+    }
+
+  }
+
+
+
 
   @override
   Future<Either<Failure, User>> signUpWithEmailPassword({
@@ -56,6 +77,7 @@ class AuthRepositoryImpl implements AuthRepository {
       return Left(Failure(e.message));
     }
   }
+
 
 
 
